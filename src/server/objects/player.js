@@ -74,9 +74,20 @@ module.exports = class Player{
     this.lastProtection = false;
 
     this.protectTimer = 3;
+
+    this.score = 0;
+    this.lastScore = 0;
+
+    this.lastHit = false;
+    this.lastHitTimer = 0;
   }
   update(dt, arenaX, arenaY){  
+    this.score += dt;
     this.protectTimer -= dt;
+    this.lastHitTimer -= dt;
+    if (this.lastHitTimer < 0){
+      this.lastHit = false;
+    }
     if (this.protectTimer < 0){
       this.protection = false;
     }
@@ -122,18 +133,16 @@ module.exports = class Player{
       this.velY = -this.maxVel;
     }
 
-    if (this.x < this.size || this.x > arenaX-this.size || this.y < this.size || this.y > arenaY-this.size){
-      this.dead = true;
-    }
-
     this.pendingKeys = [false, false, false, false]
     
   }
   static pack({players, delta, arenaX, arenaY}){
     let pack = [];
     for (let i of Object.keys(players)) {
+      let player = players[i];
       if (players[i].dead === false){
 			  players[i].update(delta, arenaX, arenaY);
+        
       }
       pack.push(players[i].getUpdatePack());
     }
@@ -157,10 +166,17 @@ module.exports = class Player{
     if (this.lastDead != this.dead){
       pack.dead = this.dead;
       this.lastDead = this.dead;
+      if (this.dead === true){
+        pack.lastHit = this.lastHit;
+      }
     }
     if (this.lastProtection != this.protection){
       pack.protection = this.protection;
       this.lastProtection = this.protection;
+    }
+    if (Math.floor(this.lastScore) != Math.floor(this.score)){
+      pack.score = Math.floor(this.score);
+      this.lastScore = Math.floor(this.score);
     }
     
     return pack;
@@ -175,7 +191,8 @@ module.exports = class Player{
       chatTime: this.chatTime,
       chatValue: this.chatValue,
       dead: this.dead,
-      protection: this.protection
+      protection: this.protection,
+      score: Math.floor(this.score)
     }
   }
   static getAllInitPack({ players }) {
@@ -213,6 +230,16 @@ module.exports = class Player{
           player1.bounceX = -((Math.cos(rotate) * bounceEffect)) * 110;
           player2.bounceY = ((Math.sin(rotate) * bounceEffect)) * 110;
           player1.bounceY = -((Math.sin(rotate) * bounceEffect)) * 110;
+          player2.lastHit = {
+            name: player1.name,
+            id: player1.id
+          }
+          player1.lastHit = {
+            name: player2.name,
+            id: player2.id
+          }
+          player1.lastHitTimer = 2.5;
+          player2.lastHitTimer = 2.5;
         }
       }
     }

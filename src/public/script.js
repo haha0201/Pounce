@@ -40,6 +40,7 @@ class Player {
     this.middleStateY = this.y;
     this.dead = initPack.dead;
     this.protection = initPack.protection;
+    this.score = initPack.score;
   }
   updatePack(updatePack){
     if (updatePack.x){
@@ -57,9 +58,15 @@ class Player {
     }
     if (updatePack.dead != undefined){
       this.dead = updatePack.dead;
+      if (updatePack.lastHit != undefined){
+        this.lastHit = updatePack.lastHit;
+      }
     }
     if (updatePack.protection != undefined){
       this.protection = updatePack.protection;
+    }
+    if (updatePack.score != undefined){
+      this.score = updatePack.score;
     }
     
   }
@@ -220,10 +227,63 @@ function render(dt){
     ctx.fillStyle = `rgb(200, 200, 200)`
     ctx.fillRect(-self.x+800, -self.y+450, server.x, server.y)
     
-
+    let leaderboard = [];
     for(let i of Object.keys(players)){
       const player = players[i];
+      if (!player.dead){
+      let type = "normal";
+      if (player.id === selfId){
+        type = "self";
+      }
+      leaderboard.push({
+        name: player.name,
+        score: player.score,
+        type: type,
+        id: player.id
+      })
+      }
       player.render(self, dt);
+    }
+    leaderboard.sort((a, b) => b.score - a.score);
+    let place = 0;
+    for(let i of leaderboard){
+      place ++;
+      players[i.id].place = place;
+      i.place = place;
+    }
+    leaderboard = leaderboard.slice(0, 3);
+    if (!self.dead){
+    if (!leaderboard.find((e) => e.type === "self")){
+      leaderboard.push({
+        name: self.name,
+        score: self.score,
+        type: "selfBad",
+        id: selfId,
+        place: self.place
+      })
+    }
+    }
+
+
+
+	  ctx.fillStyle = "rgba(22, 54, 90, 0.68)";
+	  ctx.fillRect( 1275, 50, 300, leaderboard.length * 40 + 13);
+    ctx.textSize(30);
+	  for (let i of leaderboard) {
+		  ctx.textAlign = "left";
+		  if (i.type === "normal"){
+        ctx.fillStyle = "black";
+      }
+		  else{
+			  ctx.fillStyle = "white";
+		  }
+      ctx.textSize(25);
+			ctx.fillText(
+				i.place + ". " + i.name + ": " +   i.score,
+			  1290,
+				124 + (leaderboard.indexOf(i)-1) * 40
+		  );
+      ctx.textAlign = "center";
     }
 
     if (self.dead){
@@ -234,8 +294,14 @@ function render(dt){
       ctx.fillStyle = 'rgb(250, 200, 200)'
       ctx.textSize(90);
       ctx.fillText("you are dead", 800, 380)
+      if (self.lastHit === false){
       ctx.textSize(40);
       ctx.fillText("what a stupid death", 800, 460)
+      }
+      else{
+      ctx.textSize(40);
+      ctx.fillText("killed by "+self.lastHit.name, 800, 460)
+      }
       ctx.textSize(20)
       ctx.fillText("== click space to respawn ==", 800, 500)
       if (controller.space){

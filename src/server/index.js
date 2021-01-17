@@ -113,6 +113,10 @@ wss.on("connection", ws=>{
         player.velX = 0;
         player.velY = 0;
         player.protectTimer = 3;
+        player.lastHit = false;
+        player.lastHitTimer = 0;
+      
+        player.score = 0;
         }
       }
     }
@@ -153,6 +157,15 @@ function updateGameState(clients, players){
 
   Player.collision({ playerArray: Object.entries({ ...players }), players });
   
+  for(let i of Object.keys(players)){
+    const player = players[i];
+    if ((player.x < player.size || player.x > arenaX-player.size || player.y < player.size || player.y > arenaY-player.size) && player.dead === false){
+      player.dead = true;
+      if (player.lastHit){
+        players[player.lastHit.id].score += 100 + player.score/2;
+      }
+    }
+  }
   let pack = Player.pack({players, delta, arenaX, arenaY});
 
   for(let i of Object.keys(clients)){
