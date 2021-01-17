@@ -87,11 +87,11 @@ module.exports = class Player{
     this.score += dt/10;
     this.protectTimer -= dt;
     this.lastHitTimer -= dt;
-    
-    if (this.score < 100000) {
-      this.size = Math.sqrt(this.score / 12) + 30;
+    let sizeVariable = this.score * 2.5;
+    if (sizeVariable < 100000) {
+      this.size = Math.sqrt(sizeVariable / 12) + 30;
     } else {
-      this.size = Math.sqrt(100000 / 12) + 30 + Math.pow(this.score / 100, 0.1);
+      this.size = Math.sqrt(100000 / 12) + 30 + Math.pow(sizeVariable / 100, 0.1);
     }
     if (this.lastHitTimer < 0){
       this.lastHit = false;
