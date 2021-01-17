@@ -20,5 +20,8 @@ class Controller{
   get enter(){
     return (this.keys[13])?true:false;
   }
+  get space(){
+    return (this.keys[32])?true:false;
+  }
   
 }

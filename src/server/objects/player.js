@@ -44,8 +44,8 @@ module.exports = class Player{
         randomConso() +
         randomVowel();
     }
-    this.x = Math.random() * 100;
-    this.y = Math.random() * 100;
+    this.x = Math.random() * 1000;
+    this.y = Math.random() * 1000;
     this.accX = 0;
     this.accY = 0;
     this.velX = 0;
@@ -66,6 +66,10 @@ module.exports = class Player{
     this.chatTime = 3; // Seconds
     this.chatValue = "Hello!";
     this.lastChat = "";
+    
+    this.dead = false;
+    this.lastDead = false;
+    this.protection = false;
   }
   update(dt, arenaX, arenaY){  
     if (this.movement[0] || this.pendingKeys[0]){
@@ -110,29 +114,19 @@ module.exports = class Player{
       this.velY = -this.maxVel;
     }
 
-    if (this.x < this.size){
-      this.velX = 0;
-      this.x = this.size;
+    if (this.x < this.size || this.x > arenaX-this.size || this.y < this.size || this.y > arenaY-this.size){
+      this.dead = true;
     }
-    if (this.x > arenaX-this.size){
-      this.velX = 0;
-      this.x = arenaX-this.size;
-    }
-    if (this.y < this.size){
-      this.velY = 0;
-      this.y = this.size;
-    }
-    if (this.y > arenaY-this.size){
-      this.velY = 0;
-      this.y = arenaY-this.size;
-    }
+
     this.pendingKeys = [false, false, false, false]
     
   }
   static pack({players, delta, arenaX, arenaY}){
     let pack = [];
     for (let i of Object.keys(players)) {
-			players[i].update(delta, arenaX, arenaY);
+      if (players[i].dead === false){
+			  players[i].update(delta, arenaX, arenaY);
+      }
       pack.push(players[i].getUpdatePack());
     }
     return pack;
@@ -152,6 +146,10 @@ module.exports = class Player{
       pack.name = this.name;
       this.lastName = this.name;
     }
+    if (this.lastDead != this.dead){
+      pack.dead = this.dead;
+      this.lastDead = this.dead;
+    }
     return pack;
   }
   getInitPack(){
@@ -162,7 +160,8 @@ module.exports = class Player{
       id: this.id,
       size: this.size,
       chatTime: this.chatTime,
-      chatValue: this.chatValue
+      chatValue: this.chatValue,
+      dead: this.dead
     }
   }
   static getAllInitPack({ players }) {
@@ -183,7 +182,7 @@ module.exports = class Player{
               Math.pow(player2.x - player1.x, 2) +
                 Math.pow(player2.y - player1.y, 2)
             )
-          ) < 60
+          ) < 60 && player1.dead === false && player2.dead === false && player1.protection === false && player2.protection === false
         ) {
           let distance = Math.sqrt(
             Math.abs(
@@ -195,7 +194,7 @@ module.exports = class Player{
             player2.y - player1.y,
             player2.x - player1.x
           );
-          let bounceEffect = 26;
+          let bounceEffect = 28;
           player2.bounceX = ((Math.cos(rotate) * bounceEffect)) * 110;
           player1.bounceX = -((Math.cos(rotate) * bounceEffect)) * 110;
           player2.bounceY = ((Math.sin(rotate) * bounceEffect)) * 110;

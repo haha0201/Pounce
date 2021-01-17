@@ -38,6 +38,7 @@ class Player {
     this.serverY = this.y;
     this.middleStateX = this.x;
     this.middleStateY = this.y;
+    this.dead = initPack.dead;
   }
   updatePack(updatePack){
     if (updatePack.x){
@@ -52,6 +53,9 @@ class Player {
     }
     if (updatePack.name){
       this.name = updatePack.name;
+    }
+    if (updatePack.dead != undefined){
+      this.dead = updatePack.dead;
     }
   }
   interpPlayer(delta){
@@ -69,6 +73,7 @@ class Player {
   }
   render(self, delta){
     this.interpPlayer(delta);
+    if (this.dead === false){
     const x = this.x-self.x+800;
     const y = this.y-self.y+450;
     ctx.beginPath();
@@ -91,6 +96,7 @@ class Player {
 			);
 		ctx.fillStyle = `rgb(200, 200, 200, ${this.chatTime*4})`;
 	  ctx.fillText(this.chatValue, x, Math.round( y - this.size - 50));
+    }
   }
 }
 
@@ -198,7 +204,7 @@ function render(dt){
   if (selfId){
     //Update
     ctx.fillStyle = `rgb(200, 50, 50)`
-    ctx.fillRect(-self.x+800-5, -self.y+450-5, server.x+10, server.y+10)
+    ctx.fillRect(-self.x+800-10, -self.y+450-10, server.x+20, server.y+20)
     ctx.fillStyle = `rgb(200, 200, 200)`
     ctx.fillRect(-self.x+800, -self.y+450, server.x, server.y)
     
@@ -207,11 +213,30 @@ function render(dt){
       const player = players[i];
       player.render(self, dt);
     }
+
+    if (self.dead){
+      ctx.fillStyle = "rgb(0, 0, 0)"
+      ctx.globalAlpha = 0.5;
+      ctx.fillRect(0, 0, 1600, 900)
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = 'rgb(250, 200, 200)'
+      ctx.textSize(90);
+      ctx.fillText("you are dead", 800, 380)
+      ctx.textSize(40);
+      ctx.fillText("what a stupid death", 800, 460)
+      ctx.textSize(20)
+      ctx.fillText("== click space to respawn ==", 800, 500)
+      if (controller.space){
+        ws.send(JSON.stringify({
+          type: "respawn"
+        }))
+      }
+    }
   }
   else{
     ctx.fillStyle = 'rgb(200, 200, 200)'
     ctx.textSize(40);
-    ctx.fillText("Loading...", 800, 450)
+    ctx.fillText("Loading...", 800, 450);
   }
 
   if (wsClosed === true){
@@ -231,6 +256,8 @@ function render(dt){
 }
 function updateKeys(dt){
   if (selfId){
+    const self = players[selfId];
+    if (self.dead === false){
   if (!controller.enter){
     chatLock = false;
   }
@@ -261,6 +288,14 @@ function updateKeys(dt){
   if (controller.enter){
     chatLock = true;
   }
+    }
+    else{
+      chatHolder.style.display = "none";
+    chatBox.value = "";
+    chatBox.blur();
+    chatHolder.style.display = "none";
+    chatHolder.style.display = "none";
+    }
   }
 
   

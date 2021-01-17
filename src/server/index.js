@@ -97,6 +97,23 @@ wss.on("connection", ws=>{
 	    }
       }
     }
+    if (msg.type === "respawn"){
+      const player = players[clientId]
+      if (player){
+        if (player.dead === true){
+        player.dead = false;
+        player.x = Math.random() * 1000;
+        player.y = Math.random() * 1000;
+        player.movement = [false, false, false, false]
+        player.pendingKeys = [false, false, false, false]
+        player.lastChatTime = 1;
+        player.bounceX = 0;
+        player.bounceY = 0;
+        player.velX = 0;
+        player.velY = 0;
+        }
+      }
+    }
 
     /*
 		return new Promise((resolve, reject)=>{
@@ -129,6 +146,8 @@ function updateGameState(clients, players){
   let delta = (Date.now() - lastTime)/1000;
   lastTime = Date.now();
 	currentTime += delta;
+
+
 
   Player.collision({ playerArray: Object.entries({ ...players }), players });
   
