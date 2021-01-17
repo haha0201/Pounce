@@ -82,11 +82,14 @@ module.exports = class Player{
     this.lastHitTimer = 0;
   }
   update(dt, arenaX, arenaY){  
-    this.score += dt;
+    this.score += dt/10;
     this.protectTimer -= dt;
     this.lastHitTimer -= dt;
     if (this.lastHitTimer < 0){
       this.lastHit = false;
+    }
+    else{
+      this.score += dt*3;
     }
     if (this.protectTimer < 0){
       this.protection = false;
@@ -238,8 +241,8 @@ module.exports = class Player{
             name: player2.name,
             id: player2.id
           }
-          player1.lastHitTimer = 2.5;
-          player2.lastHitTimer = 2.5;
+          player1.lastHitTimer = 2;
+          player2.lastHitTimer = 2;
         }
       }
     }

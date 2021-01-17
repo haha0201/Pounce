@@ -16,6 +16,7 @@ export const players = {};
 const controller = new Controller()
 
 let keys = ["arrowup", "arrowright", "arrowdown", "arrowleft"];
+let keys2 = ["w", "d", "s", "a"];
 
 
 let selfId = "";
@@ -187,6 +188,20 @@ document.onkeydown = function(e){
       )
     )
     }
+    if (keys2.includes(e.key.toLowerCase())) {
+    ws.send(
+      JSON.stringify(
+        {
+          type: "keys",
+          data: {
+            keys: keys2.indexOf(e.key.toLowerCase()),
+            value: true
+          }
+        }
+      )
+    )
+    }
+    
   }
   }
 }
@@ -207,6 +222,20 @@ document.onkeyup = function(e){
       )
     )
     }
+    if (keys2.includes(e.key.toLowerCase())) {
+    ws.send(
+      JSON.stringify(
+        {
+          type: "keys",
+          data: {
+            keys: keys2.indexOf(e.key.toLowerCase()),
+            value: false
+          }
+        }
+      )
+    )
+    }
+    
   }
   }
 }
