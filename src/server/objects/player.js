@@ -80,11 +80,19 @@ module.exports = class Player{
 
     this.lastHit = false;
     this.lastHitTimer = 0;
+    
+    this.lastSize = 29;
   }
   update(dt, arenaX, arenaY){  
     this.score += dt/10;
     this.protectTimer -= dt;
     this.lastHitTimer -= dt;
+    
+    if (this.score < 100000) {
+      this.size = Math.sqrt(this.score / 12) + 30;
+    } else {
+      this.size = Math.sqrt(100000 / 12) + 30 + Math.pow(this.score / 100, 0.1);
+    }
     if (this.lastHitTimer < 0){
       this.lastHit = false;
     }
@@ -162,6 +170,10 @@ module.exports = class Player{
       this.lastChat = this.chatValue;
       this.justChat = false;
     }
+    if (Math.floor(this.lastSize) != Math.floor(this.size)){
+      pack.size = Math.floor(this.size);
+      this.lastSize = Math.floor(this.size);
+    }
     if (this.lastName != this.name){
       pack.name = this.name;
       this.lastName = this.name;
@@ -216,7 +228,7 @@ module.exports = class Player{
               Math.pow(player2.x - player1.x, 2) +
                 Math.pow(player2.y - player1.y, 2)
             )
-          ) < 60 && player1.dead === false && player2.dead === false && player1.protection === false && player2.protection === false
+          ) < player1.size + player2.size && player1.dead === false && player2.dead === false && player1.protection === false && player2.protection === false
         ) {
           let distance = Math.sqrt(
             Math.abs(

@@ -69,6 +69,9 @@ class Player {
     if (updatePack.score != undefined){
       this.score = updatePack.score;
     }
+    if (updatePack.size){
+      this.size = updatePack.size;
+    }
     
   }
   interpPlayer(delta){
@@ -110,7 +113,7 @@ class Player {
 		const width = ctx.measureText( this.chatValue ).width;
 		ctx.fillRect(
 				Math.round( x - width / 2 - 3 ),
-				Math.round( y - 98 ),
+				Math.round( y - 68 - this.size),
 				Math.round( ( width * 2 ) / 2 + 6 ),
 				25
 			);
