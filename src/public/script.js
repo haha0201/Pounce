@@ -39,6 +39,7 @@ class Player {
     this.middleStateX = this.x;
     this.middleStateY = this.y;
     this.dead = initPack.dead;
+    this.protection = initPack.protection;
   }
   updatePack(updatePack){
     if (updatePack.x){
@@ -57,6 +58,10 @@ class Player {
     if (updatePack.dead != undefined){
       this.dead = updatePack.dead;
     }
+    if (updatePack.protection != undefined){
+      this.protection = updatePack.protection;
+    }
+    
   }
   interpPlayer(delta){
     this.chatTime -= delta;
@@ -76,10 +81,17 @@ class Player {
     if (this.dead === false){
     const x = this.x-self.x+800;
     const y = this.y-self.y+450;
+    if (this.protection){
+      ctx.globalAlpha = 0.5;
+    }
+    else{
+      ctx.globalAlpha = 1;
+    }
     ctx.beginPath();
     ctx.fillStyle = "rgb(50, 50, 50)"
     ctx.arc(x, y, this.size, 0, Math.PI*2)
     ctx.fill();
+    ctx.globalAlpha = 1;
 
     ctx.textSize(30);
     ctx.fillText(this.name, x, y-this.size-15)

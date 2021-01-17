@@ -44,8 +44,9 @@ module.exports = class Player{
         randomConso() +
         randomVowel();
     }
-    this.x = Math.random() * 1000;
-    this.y = Math.random() * 1000;
+    this.x = Math.random() * 600 + 200;
+    this.y = Math.random() * 600 + 200;
+  
     this.accX = 0;
     this.accY = 0;
     this.velX = 0;
@@ -68,10 +69,17 @@ module.exports = class Player{
     this.lastChat = "";
     
     this.dead = false;
-    this.lastDead = false;
-    this.protection = false;
+    this.lastDead = true;
+    this.protection = true;
+    this.lastProtection = false;
+
+    this.protectTimer = 3;
   }
   update(dt, arenaX, arenaY){  
+    this.protectTimer -= dt;
+    if (this.protectTimer < 0){
+      this.protection = false;
+    }
     if (this.movement[0] || this.pendingKeys[0]){
       this.velY -= this.maxVel*14 * dt;
     }
@@ -150,6 +158,11 @@ module.exports = class Player{
       pack.dead = this.dead;
       this.lastDead = this.dead;
     }
+    if (this.lastProtection != this.protection){
+      pack.protection = this.protection;
+      this.lastProtection = this.protection;
+    }
+    
     return pack;
   }
   getInitPack(){
@@ -161,7 +174,8 @@ module.exports = class Player{
       size: this.size,
       chatTime: this.chatTime,
       chatValue: this.chatValue,
-      dead: this.dead
+      dead: this.dead,
+      protection: this.protection
     }
   }
   static getAllInitPack({ players }) {

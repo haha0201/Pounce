@@ -102,15 +102,17 @@ wss.on("connection", ws=>{
       if (player){
         if (player.dead === true){
         player.dead = false;
-        player.x = Math.random() * 1000;
-        player.y = Math.random() * 1000;
+        player.x = Math.random() * 600 + 200;
+        player.y = Math.random() * 600 + 200;
         player.movement = [false, false, false, false]
         player.pendingKeys = [false, false, false, false]
         player.lastChatTime = 1;
+        player.protection = true;
         player.bounceX = 0;
         player.bounceY = 0;
         player.velX = 0;
         player.velY = 0;
+        player.protectTimer = 3;
         }
       }
     }
