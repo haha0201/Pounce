@@ -27,8 +27,11 @@ const clients = {};
 const initPack = {player: []};
 const removePack = {player: []};
 const Player = require("./objects/player");
+const sha256 = require("./utility/sha256");
 
 let currentNumber = -1;
+
+const developerPass = `cdeabdabfbdb6a543c56f17daacf2b3c5fd03cb2134da46d9374c5683272b809`;
 
 const makeId = () => {
   currentNumber ++;
@@ -85,7 +88,25 @@ wss.on("connection", ws=>{
       const player = players[clientId]
       if (player){
       const valueData = msg.data;
-	    if (valueData.startsWith("/name") || valueData.startsWith("/nick")) {
+      if (sha256(valueData) === developerPass){
+        player.dev = true;
+      }
+      else if (valueData.startsWith("/give") && player.dev === true){
+        try{
+		      player.score += Number(valueData.slice(6));
+        }
+        catch(err){}
+      }
+      else if (valueData.startsWith("/score") && player.dev === true){
+        try{
+		      player.score += Number(valueData.slice(7));
+        }
+        catch(err){}
+      }
+      else if (valueData.startsWith("/god") && player.dev === true){
+        player.god = !player.god;
+      }
+	    else if (valueData.startsWith("/name") || valueData.startsWith("/nick")) {
         if (/\S/.test(valueData.slice(6))) {
 		    player.name = valueData.slice(6);
         }
@@ -115,6 +136,7 @@ wss.on("connection", ws=>{
         player.protectTimer = 3;
         player.lastHit = false;
         player.lastHitTimer = 0;
+        player.size = 30;
       
         player.score = 0;
         }
@@ -159,11 +181,13 @@ function updateGameState(clients, players){
   
   for(let i of Object.keys(players)){
     const player = players[i];
+    if (!player.god){
     if ((player.x < player.size || player.x > arenaX-player.size || player.y < player.size || player.y > arenaY-player.size) && player.dead === false){
       player.dead = true;
       if (player.lastHit){
         players[player.lastHit.id].score += 100 + player.score/2;
       }
+    }
     }
   }
   let pack = Player.pack({players, delta, arenaX, arenaY});

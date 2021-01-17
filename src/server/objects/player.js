@@ -46,6 +46,9 @@ module.exports = class Player{
     }
     this.x = Math.random() * 600 + 200;
     this.y = Math.random() * 600 + 200;
+
+    this.dev = false;
+    this.lastDev = true;
   
     this.accX = 0;
     this.accY = 0;
@@ -82,6 +85,8 @@ module.exports = class Player{
     this.lastHitTimer = 0;
     
     this.lastSize = 29;
+
+    this.god = false;
   }
   update(dt, arenaX, arenaY){  
     this.score += dt/10;
@@ -114,6 +119,20 @@ module.exports = class Player{
     if (this.movement[3] || this.pendingKeys[3]){
       this.velX -= this.maxVel*14 * dt;
     }
+    if (this.god){
+          if (this.movement[0] || this.pendingKeys[0]){
+      this.velY -= this.maxVel*14 * dt;
+    }
+    if (this.movement[1] || this.pendingKeys[1]){
+      this.velX += this.maxVel*14 * dt;
+    }
+    if (this.movement[2] || this.pendingKeys[2]){
+      this.velY += this.maxVel*14 * dt;
+    }
+    if (this.movement[3] || this.pendingKeys[3]){
+      this.velX -= this.maxVel*14 * dt;
+    }
+    }
 
     if (!this.movement[1] && !this.movement[3]){
     this.velX *= Math.pow(this.friction, dt*50)
@@ -128,6 +147,7 @@ module.exports = class Player{
 
 
     this.chatTime -= dt;
+
 
     this.x += (this.velX+this.bounceX) * dt;
     this.y += (this.velY+this.bounceY) * dt;
@@ -193,6 +213,10 @@ module.exports = class Player{
       pack.score = Math.floor(this.score);
       this.lastScore = Math.floor(this.score);
     }
+    if (this.lastDev != this.dev){
+      pack.dev = this.dev;
+      this.lastDev = this.dev;
+    }
     
     return pack;
   }
@@ -207,7 +231,8 @@ module.exports = class Player{
       chatValue: this.chatValue,
       dead: this.dead,
       protection: this.protection,
-      score: Math.floor(this.score)
+      score: Math.floor(this.score),
+      dev: this.dev
     }
   }
   static getAllInitPack({ players }) {
@@ -228,7 +253,7 @@ module.exports = class Player{
               Math.pow(player2.x - player1.x, 2) +
                 Math.pow(player2.y - player1.y, 2)
             )
-          ) < player1.size + player2.size && player1.dead === false && player2.dead === false && player1.protection === false && player2.protection === false
+          ) < player1.size + player2.size && player1.dead === false && player2.dead === false && player1.protection === false && player2.protection === false && player1.god === false && player2.god === false
         ) {
           let distance = Math.sqrt(
             Math.abs(

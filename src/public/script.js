@@ -1,4 +1,4 @@
-import { getBorders, resize, lerp, negative } from './scripts/utility.js';
+import { getBorders, resize, lerp, negative, sha256 } from './scripts/utility.js';
 
 const server = {
   tick: 25, //ServerTick, updates automatically
@@ -18,6 +18,76 @@ const controller = new Controller()
 let keys = ["arrowup", "arrowright", "arrowdown", "arrowleft"];
 let keys2 = ["w", "d", "s", "a"];
 
+function round(e){
+  return Math.round(e);
+}
+var convert = function(x){
+    x = round(x);
+    if (x<1000){return String(x);}
+    else if (x<10000){
+        return String(round(x/10)/100)+"k";
+    }
+    else if (x<100000){
+        return String(round(x/100)/10)+"k";
+    }
+    else if (x<1000000){
+        return String(round(x/1000))+"k";
+    }
+    else if (x<10000000){
+        return String(round(x/10000)/100)+"M";
+    }
+    else if (x<100000000){
+        return String(round(x/100000)/10)+"M";
+    }
+    else if (x<1000000000){
+        return String(round(x/1000000))+"M";
+    }
+    else if (x<10000000000){
+        return String(round(x/10000000)/100)+"B";
+    }
+    else if (x<100000000000){
+        return String(round(x/100000000)/10)+"B";
+    }
+    else if (x<1000000000000){
+        return String(round(x/1000000000))+"B";
+    }
+    else if (x<10000000000000){
+        return String(round(x/10000000000)/100)+"T";
+    }
+    else if (x<100000000000000){
+        return String(round(x/100000000000)/10)+"T";
+    }
+    else if (x<1000000000000000){
+        return String(round(x/1000000000000))+"T";
+    }
+    else if (x<10000000000000000){
+        return String(round(x/10000000000000)/100)+"q";
+    }
+    else if (x<100000000000000000){
+        return String(round(x/100000000000000)/10)+"q";
+    }
+    else if (x<1000000000000000000){
+        return String(round(x/1000000000000000))+"q";
+    }
+    else if (x<10000000000000000000){
+        return String(round(x/10000000000000000)/100)+"Q";
+    }
+    else if (x<100000000000000000000){
+        return String(round(x/100000000000000000)/10)+"Q";
+    }
+    else if (x<1000000000000000000000){
+        return String(round(x/1000000000000000000))+"Q";
+    }
+    else if (x<10000000000000000000000){
+        return String(round(x/10000000000000000000)/100)+"S";
+    }
+    else if (x<100000000000000000000000){
+        return String(round(x/100000000000000000000)/10)+"S";
+    }
+    else{
+        return String(round(x/1000000000000000000000))+"S";
+    }
+};
 
 let selfId = "";
 let lastKeys = [];
@@ -42,6 +112,7 @@ class Player {
     this.dead = initPack.dead;
     this.protection = initPack.protection;
     this.score = initPack.score;
+    this.dev = initPack.dev;
   }
   updatePack(updatePack){
     if (updatePack.x){
@@ -72,6 +143,9 @@ class Player {
     if (updatePack.size){
       this.size = updatePack.size;
     }
+    if (updatePack.dev){
+      this.dev = updatePack.dev;
+    }
     
   }
   interpPlayer(delta){
@@ -99,7 +173,12 @@ class Player {
       ctx.globalAlpha = 1;
     }
     ctx.beginPath();
+    if (!this.dev){
     ctx.fillStyle = "rgb(50, 50, 50)"
+    }
+    else{
+    ctx.fillStyle = `hsl(${Date.now()/10}, 90%, 20%)`
+    }
     ctx.arc(x, y, this.size, 0, Math.PI*2)
     ctx.fill();
     ctx.globalAlpha = 1;
@@ -108,7 +187,7 @@ class Player {
     ctx.fillText(this.name, x, y-this.size-15)
 
     
-    ctx.font = "20px Verdana, Geneva, sans-serif";
+    ctx.textSize(20)
 		ctx.fillStyle = `rgb(50, 50, 50, ${this.chatTime*2.5})`;
 		const width = ctx.measureText( this.chatValue ).width;
 		ctx.fillRect(
@@ -311,7 +390,7 @@ function render(dt){
 		  }
       ctx.textSize(25);
 			ctx.fillText(
-				i.place + ". " + i.name + ": " +   i.score,
+				i.place + ". " + i.name + ": " +   convert(i.score),
 			  1290,
 				124 + (leaderboard.indexOf(i)-1) * 40
 		  );
