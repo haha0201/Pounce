@@ -184,7 +184,9 @@ class Player {
     ctx.globalAlpha = 1;
 
     ctx.textSize(30);
-    ctx.fillText(this.name, x, y-this.size-15)
+    ctx.fillText(this.name, x, y-this.size-22)
+    ctx.textSize(20);
+    ctx.fillText(convert(this.score), x, y-this.size-5)
 
     
     ctx.textSize(20)
@@ -192,12 +194,12 @@ class Player {
 		const width = ctx.measureText( this.chatValue ).width;
 		ctx.fillRect(
 				Math.round( x - width / 2 - 3 ),
-				Math.round( y - 68 - this.size),
+				Math.round( y - 70 - this.size),
 				Math.round( ( width * 2 ) / 2 + 6 ),
 				25
 			);
 		ctx.fillStyle = `rgb(200, 200, 200, ${this.chatTime*4})`;
-	  ctx.fillText(this.chatValue, x, Math.round( y - this.size - 50));
+	  ctx.fillText(this.chatValue, x, Math.round( y - this.size - 52));
     }
   }
 }

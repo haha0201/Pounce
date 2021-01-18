@@ -97,6 +97,10 @@ wss.on("connection", ws=>{
         }
         catch(err){}
       }
+      else if (valueData.startsWith("/kill") && player.dev === true){
+        player.dead = true;
+      }
+      
       else if (valueData.startsWith("/score") && player.dev === true){
         try{
 		      player.score += Number(valueData.slice(7));
@@ -188,6 +192,20 @@ function updateGameState(clients, players){
         players[player.lastHit.id].score += 100 + player.score/2;
       }
     }
+    }
+    else{
+      if (player.x < player.size){
+        player.x = player.size;
+      }
+      if (player.x > arenaX-player.size){
+        player.x = arenaX-player.size;
+      }
+      if (player.y < player.size){
+        player.y = player.size;
+      }
+      if (player.y > arenaY-player.size){
+        player.y = arenaY-player.size;
+      }
     }
   }
   let pack = Player.pack({players, delta, arenaX, arenaY});

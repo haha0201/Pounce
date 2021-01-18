@@ -88,21 +88,30 @@ module.exports = class Player{
 
     this.god = false;
   }
-  update(dt, arenaX, arenaY){  
-    this.score += dt/10;
+  update(dt, arenaX, arenaY){ 
+    if (isNaN(this.score)){
+      this.score = 0;
+    } 
+    if (this.score < 0){
+      this.dead = true;
+    }
+    this.score += dt/2;
     this.protectTimer -= dt;
     this.lastHitTimer -= dt;
     let sizeVariable = this.score * 2.5;
-    if (sizeVariable < 100000) {
+    if (sizeVariable < 10000) {
       this.size = Math.sqrt(sizeVariable / 12) + 30;
     } else {
-      this.size = Math.sqrt(100000 / 12) + 30 + Math.pow(sizeVariable / 100, 0.1);
+      this.size = Math.sqrt(10000 / 12) + 30 + Math.pow(sizeVariable / 100, 0.1);
+      if (this.size > 90){
+        this.size = 90;
+      }
     }
     if (this.lastHitTimer < 0){
       this.lastHit = false;
     }
     else{
-      this.score += dt*3;
+      this.score += dt*4;
     }
     if (this.protectTimer < 0){
       this.protection = false;
@@ -253,7 +262,7 @@ module.exports = class Player{
               Math.pow(player2.x - player1.x, 2) +
                 Math.pow(player2.y - player1.y, 2)
             )
-          ) < player1.size + player2.size && player1.dead === false && player2.dead === false && player1.protection === false && player2.protection === false && player1.god === false && player2.god === false
+          ) < player1.size + player2.size && player1.dead === false && player2.dead === false && player1.protection === false && player2.protection === false
         ) {
           let distance = Math.sqrt(
             Math.abs(
@@ -265,7 +274,7 @@ module.exports = class Player{
             player2.y - player1.y,
             player2.x - player1.x
           );
-          let bounceEffect = 28;
+          let bounceEffect = 30;
           player2.bounceX = ((Math.cos(rotate) * bounceEffect)) * 110;
           player1.bounceX = -((Math.cos(rotate) * bounceEffect)) * 110;
           player2.bounceY = ((Math.sin(rotate) * bounceEffect)) * 110;
