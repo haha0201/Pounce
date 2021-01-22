@@ -248,6 +248,8 @@ class Player {
 		this.score = initPack.score;
 		this.dev = initPack.dev;
     this.level = initPack.level;
+    this.xpNeeded = initPack.xpNeeded;
+    this.progress = 0;
 	}
 	updatePack(updatePack) {
 		if (updatePack.x) {
@@ -284,6 +286,9 @@ class Player {
 		if (updatePack.dev) {
 			this.dev = updatePack.dev;
 		}
+    if (updatePack.xpNeeded){
+      this.xpNeeded = updatePack.xpNeeded;
+    }
 
 	}
 	interpPlayer(delta) {
@@ -554,9 +559,14 @@ function render(dt) {
 
     if (!guest){
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = "rgb(30, 30, 30)"
-    ctx.lineWidth = 5;
-    ctx.strokeRoundRect(1500, 300, 30, 500, 20)
+    ctx.fillStyle = `rgb(30, 30, 45)`
+    ctx.roundRect(1545, 295, 30, 540, 15)
+    ctx.fillStyle = "rgb(110, 110, 110)"
+    ctx.roundRect(1550, 300, 20, 530, 12)
+    let ratio = self.progress/self.xpNeeded;
+    ctx.fillStyle = `hsla(${83+ratio*80}, ${67+ratio*22}%, ${42+ratio*8}%, 1)`
+    ctx.roundRect(1550, 300 + 510*(1-ratio), 20, 510*ratio+20, 12)
+    
     }
      
 
@@ -690,7 +700,7 @@ ws.addEventListener("message", (datas) => {
 		}
 		else {
 			if (msg.reason === 1) {
-				info.innerHTML = "Your username cannot be whitespace and must be <12 chars"
+				info.innerHTML = "Your username cannot be whitespace and must be <16 chars"
 			}
 			if (msg.reason === 2) {
 				info.innerHTML = "This username has been taken"
@@ -775,6 +785,9 @@ ws.addEventListener("message", (datas) => {
 				}
 			}
 		}
+    if (msg.xp){
+      players[selfId].progress = msg.xp;
+    }
 	}
 	else if (msg.type === "remove") {
 		if (msg.datas.player && msg.datas.player.length > 0) {

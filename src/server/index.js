@@ -224,7 +224,7 @@ wss.on("connection", ws => {
 				const account = msg.account;
 				account.username = account.username.replace(whiteSpace, "")
 				account.password = sha256(account.password)
-				if (!/\S/.test(account.username) || account.username.length > 12) {
+				if (!/\S/.test(account.username) || account.username.length > 16) {
 					ws.send(msgpack.encode({
 						type: "create",
 						success: false,
@@ -514,6 +514,7 @@ function updateGameState(clients, players) {
       while (accounts[player.name].xp >= accounts[player.name].xpNeeded){
         accounts[player.name].level ++;
         accounts[player.name].xp -= accounts[player.name].xpNeeded;
+        accounts[player.name].toXP -= accounts[player.name].xpNeeded;
         accounts[player.name].xpNeeded = xpNeeded(accounts[player.name].level) - xpNeeded(accounts[player.name].level-1)
         player.level = accounts[player.name].level;
         player.xpNeeded = accounts[player.name].xpNeeded;
@@ -530,7 +531,7 @@ function updateGameState(clients, players) {
 			datas: { player: pack },
 		};
     if (players[i]){
-      if (accounts[players[i].name]){
+      if (accounts[players[i].name] != undefined){
         const account = accounts[players[i].name];
         peyloade.xp = Math.round(account.xp)
       }
