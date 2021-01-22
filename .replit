@@ -1,1 +1,1 @@
-run = "node src/server/index.js"
+run = "clear \n node src/server/index.js"

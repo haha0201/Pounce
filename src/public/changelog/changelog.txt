@@ -1,0 +1,59 @@
+Pounce - Game Version History
+
+January 21st, 2021
+v1.1.0
+- Added levels to accounts
+====
+January 21st, 2021
+v1.0.4
+- Added changelog
+====
+January 21st, 2021
+v1.0.3
+- Check profile button (not working yet)
+====
+January 19th, 2021
+v1.0.2
+- Accounts are stored differently on thes server, you won't notice anything
+====
+January 19th, 2021
+v1.0.1
+- Added a version display on the menu
+====
+January 19th, 2021
+v1.0.0
+- Added accounts
+====
+January 17th, 2021
+v0.1.5
+- Bounce increased by 4%
+- Max size (no more going super big)
+====
+January 17th, 2021
+v0.1.4
+- reworked godmode
+- fixed a bug
+====
+January 17th, 2021
+v0.1.3
+- Added link to discord on menu
+====
+January 17th, 2021
+v0.1.2
+- Score is a bit reworked
+- Score is now displayed under player name
+====
+January 17th, 2021
+v0.1.1
+- more dev controls
+====
+January 17th, 2021
+v0.1.0
+- dev controls
+- leaderboard
+- score
+- death screen & menu
+====
+January 16th, 2021
+v0.0.0
+- Game existance began

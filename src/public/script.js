@@ -12,6 +12,7 @@ if (!Date.now) {
 }
 
 let afr;
+let guest = false;
 export const players = {};
 const controller = new Controller()
 
@@ -94,6 +95,39 @@ let lastKeys = [];
 CanvasRenderingContext2D.prototype.textSize = function(size) {
 	ctx.font = `${size}px 'Ubuntu'`;
 }
+
+CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, radius) {
+  var r = x + w;
+  var b = y + h;
+  this.beginPath();
+  this.moveTo(x + radius, y);
+  this.lineTo(r - radius, y);
+  this.quadraticCurveTo(r, y, r, y + radius);
+  this.lineTo(r, y + h - radius);
+  this.quadraticCurveTo(r, b, r - radius, b);
+  this.lineTo(x + radius, b);
+  this.quadraticCurveTo(x, b, x, b - radius);
+  this.lineTo(x, y + radius);
+  this.quadraticCurveTo(x, y, x + radius, y);
+  this.fill();
+};
+
+CanvasRenderingContext2D.prototype.strokeRoundRect = function (x, y, w, h, radius) {
+  var r = x + w;
+  var b = y + h;
+  this.beginPath();
+  this.moveTo(x + radius, y);
+  this.lineTo(r - radius, y);
+  this.quadraticCurveTo(r, y, r, y + radius);
+  this.lineTo(r, y + h - radius);
+  this.quadraticCurveTo(r, b, r - radius, b);
+  this.lineTo(x + radius, b);
+  this.quadraticCurveTo(x, b, x, b - radius);
+  this.lineTo(x, y + radius);
+  this.quadraticCurveTo(x, y, x + radius, y);
+  this.stroke();
+};
+
 
 /*-- Entering Game Stuff --*/
 let active = "guest";
@@ -213,6 +247,7 @@ class Player {
 		this.protection = initPack.protection;
 		this.score = initPack.score;
 		this.dev = initPack.dev;
+    this.level = initPack.level;
 	}
 	updatePack(updatePack) {
 		if (updatePack.x) {
@@ -221,6 +256,9 @@ class Player {
 		if (updatePack.y) {
 			this.serverY = updatePack.y;
 		}
+    if (updatePack.level != undefined){
+      this.level = updatePack.level;
+    }
 		if (updatePack.chatValue) {
 			this.chatTime = 5;
 			this.chatValue = updatePack.chatValue;
@@ -285,8 +323,13 @@ class Player {
 
 			ctx.textSize(30);
 			ctx.fillText(this.name, x, y - this.size - 22)
-			ctx.textSize(20);
-			ctx.fillText(convert(this.score), x, y - this.size - 5)
+			ctx.textSize(17);
+      if (this.level != null){
+			ctx.fillText("Level "+this.level, x, y - this.size - 4.3)
+      }
+      else{
+      ctx.fillText("Guest Account", x, y - this.size - 4.3)
+      }
 
 
 			ctx.textSize(20)
@@ -509,6 +552,15 @@ function render(dt) {
 			ctx.textAlign = "center";
 		}
 
+    if (!guest){
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = "rgb(30, 30, 30)"
+    ctx.lineWidth = 5;
+    ctx.strokeRoundRect(1500, 300, 30, 500, 20)
+    }
+     
+
+
 		if (self.dead) {
 			ctx.fillStyle = "rgb(0, 0, 0)"
 			ctx.globalAlpha = 0.5;
@@ -622,6 +674,7 @@ afr = window.requestAnimationFrame(mainLoop)
 ws.addEventListener("message", (datas) => {
 	const msg = msgpack.decode(new Uint8Array(datas.data))
 	if (msg.type === "create") {
+    guest = false;
 		if (msg.success) {
 			playButton.style.display = "inline";
 			logoutButton.style.display = "inline";
@@ -663,6 +716,7 @@ ws.addEventListener("message", (datas) => {
 
 	}
 	else if (msg.type === "login") {
+    guest = false;
 		if (msg.success) {
 			info.innerHTML = "Logged in as " + msg.username
 			loginDiv.style.display = "none";
@@ -681,6 +735,7 @@ ws.addEventListener("message", (datas) => {
 		}
 	}
 	else if (msg.type === "guest") {
+    guest = true;
 		info.innerHTML = "Logged in as " + msg.username
 		playButton.style.display = "inline";
 		logoutButton.style.display = "inline";

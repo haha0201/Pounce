@@ -1,8 +1,10 @@
 module.exports = class Player {
-	constructor(id, name, guest) {
+	constructor(id, name, guest, level, xpNeeded) {
 		this.id = id;
 		this.name = name;
 		this.guest = guest;
+    this.level = level;
+    this.levelChanged = false;
 
 		this.x = Math.random() * 600 + 200;
 		this.y = Math.random() * 600 + 200;
@@ -10,6 +12,8 @@ module.exports = class Player {
 		this.dev = false;
 		this.lastDev = false;
 
+
+    this.xpNeeded = xpNeeded;
     
 
 
@@ -56,9 +60,8 @@ module.exports = class Player {
 			this.score = 0;
 		}
 		if (this.score < 0) {
-			this.dead = true;
+			this.score = 0;
 		}
-		this.score += dt / 2;
 		this.protectTimer -= dt;
 		this.lastHitTimer -= dt;
 		let sizeVariable = this.score * 2.5;
@@ -72,9 +75,6 @@ module.exports = class Player {
 		}
 		if (this.lastHitTimer < 0) {
 			this.lastHit = false;
-		}
-		else {
-			this.score += dt * 4;
 		}
 		if (this.protectTimer < 0) {
 			this.protection = false;
@@ -189,6 +189,11 @@ module.exports = class Player {
 			pack.dev = this.dev;
 			this.lastDev = this.dev;
 		}
+    if (this.levelChanged === true){
+      pack.level = this.level;
+      pack.xpNeeded = this.xpNeeded;
+      this.levelChanged = false;
+    }
 
 		return pack;
 	}
@@ -204,7 +209,9 @@ module.exports = class Player {
 			dead: this.dead,
 			protection: this.protection,
 			score: Math.floor(this.score),
-			dev: this.dev
+			dev: this.dev,
+      level: this.level,
+      xpNeeded: this.xpNeeded
 		}
 	}
 	static getAllInitPack({ players }) {

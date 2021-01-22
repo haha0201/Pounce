@@ -4,6 +4,13 @@ body {
   margin: 0;
   padding: 0;
   background-color: rgb(20, 20, 20);
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }
 * {
   margin: 0;
@@ -18,6 +25,12 @@ body {
   left: 10px;
   bottom: 10px;
 }
+#links2 {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+
 #menu{
   position: absolute;
   display:flex;
@@ -118,12 +131,39 @@ h1{
   line-height: 47px;
 }
 h2{
-  font-size: 22px;
+  font-size: 17px;
+  color: #949494;
+  text-decoration: none;
+  background-color: none;
+}
+a{
+  text-decoration: none;
+  background-color: none;
+  transition: all 0.4s ease;
+}
+/* unvisited link */
+a:link {
+  color: #949494;
+}
+
+/* visited link */
+a:visited {
+  color: #949494;
+}
+
+/* mouse over link */
+a:hover {
+  color: #a6c0b6;
+}
+
+/* selected link */
+a:active {
+  color: #949494;
 }
 .update{
   color: #727272;
   margin-bottom: 20px;
-  font-size: 12px;
+  font-size: 9px;
 }
 canvas {
   position: absolute;
