@@ -563,13 +563,19 @@ function render(dt) {
     if (!guest){
     ctx.globalAlpha = 1;
     ctx.fillStyle = `rgb(30, 30, 45)`
-    ctx.roundRect(1545, 295, 30, 540, 15)
+    ctx.roundRect(1520, 285, 30, 550, 15)
     ctx.fillStyle = "rgb(110, 110, 110)"
-    ctx.roundRect(1550, 300, 20, 530, 12)
+    ctx.roundRect(1525, 290, 20, 540, 12)
     ratioTo = self.progress/self.xpNeeded;
-    ratio += (ratioTo-ratio)/6;
+    ratio += (ratioTo-ratio)/3;
     ctx.fillStyle = `hsla(${83+ratio*80}, ${67+ratio*22}%, ${42+ratio*8}%, 1)`
-    ctx.roundRect(1550, 300 + 510*(1-ratio), 20, 510*ratio+20, 12)
+    ctx.roundRect(1525, 290 + 520*(1-ratio), 20, 520*ratio+20, 12)
+
+    ctx.fillStyle = "rgb(70, 70, 70)"
+    ctx.textSize(32);
+    ctx.fillText("Lv"+self.level, 1535, 860)
+    ctx.textSize(20);
+    ctx.fillText(convert(players[selfId].progress)+"/"+convert(players[selfId].xpNeeded), 1535, 880)
     
     }
      

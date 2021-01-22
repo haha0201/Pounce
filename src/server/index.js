@@ -582,15 +582,16 @@ console.log("Game Started")
 setInterval(() => {
 	db.set("accounts", accounts).catch((error) => {console.error(error);})
 }, 3300)
-/*
-//Setting Devs
-//Only run if you want to make account a dev
 
+//Setting Devs
+//Only run if you want to make account gain XP
+/*
 setTimeout(() => {
-  for(var i of accounts){
-    if (["Pounce", "e", "Dev", "Developer", "SERVER", "Pouncer", "Tester", 'haha0201', 'Mathletesv'].includes(i.username)){
-      i.dev = true;
+  for(var i of Object.keys(accounts)){
+    if (["Tester"].includes(accounts[i].username)){
+      accounts[i].totalXP = 27856608;
     }
   }
 }, 2000)
 */
+
