@@ -16,6 +16,9 @@ let guest = false;
 export const players = {};
 const controller = new Controller()
 
+var ratioTo = 0;
+var ratio = 0;
+
 let keys = ["arrowup", "arrowright", "arrowdown", "arrowleft"];
 let keys2 = ["w", "d", "s", "a"];
 
@@ -563,7 +566,8 @@ function render(dt) {
     ctx.roundRect(1545, 295, 30, 540, 15)
     ctx.fillStyle = "rgb(110, 110, 110)"
     ctx.roundRect(1550, 300, 20, 530, 12)
-    let ratio = self.progress/self.xpNeeded;
+    ratioTo = self.progress/self.xpNeeded;
+    ratio += (ratioTo-ratio)/6;
     ctx.fillStyle = `hsla(${83+ratio*80}, ${67+ratio*22}%, ${42+ratio*8}%, 1)`
     ctx.roundRect(1550, 300 + 510*(1-ratio), 20, 510*ratio+20, 12)
     

@@ -495,16 +495,11 @@ function updateGameState(clients, players) {
 			}
 		}
     if (!player.dead){
-      player.score += delta/2;
-      if (accounts[player.name]){
-        accounts[player.name].toXP += delta/2;
-        accounts[player.name].totalXP += delta/2;
-      }
       if (player.lastHitTimer >= 0){
-        player.score += player.lastHitTimer * delta * 6;
+        player.score += player.lastHitTimer * delta * 8;
         if (accounts[player.name]){
-          accounts[player.name].toXP += player.lastHitTimer * delta * 6;
-          accounts[player.name].totalXP += player.lastHitTimer * delta * 6;
+          accounts[player.name].toXP += player.lastHitTimer * delta * 8;
+          accounts[player.name].totalXP += player.lastHitTimer * delta * 8;
         }
       }
     }
@@ -533,7 +528,15 @@ function updateGameState(clients, players) {
     if (players[i]){
       if (accounts[players[i].name] != undefined){
         const account = accounts[players[i].name];
+        if (account.totalXP < 2000){
+        peyloade.xp = Math.round(account.xp*100)/100
+        }
+        else if (account.totalXP < 5000){
+        peyloade.xp = Math.round(account.xp10)*10
+        }
+        else{
         peyloade.xp = Math.round(account.xp)
+        }
       }
     }
 		if (clientSocket.readyState === WebSocket.OPEN) {
