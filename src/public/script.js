@@ -376,12 +376,14 @@ class Player {
 
 			ctx.textSize(30);
 			ctx.fillText(this.name, x, y - this.size - 22)
+      ctx.textSize(22);
+      ctx.fillText(convert(this.score), x, y - this.size-3)
 			ctx.textSize(22);
       if (this.level != null){
 			ctx.fillText("Level "+this.level, x, y + this.size + 21)
       }
       else{
-      ctx.fillText("Guest Account", x, y - this.size - 4.3)
+      ctx.fillText("Guest Account", x, y + this.size + 21)
       }
 
 
