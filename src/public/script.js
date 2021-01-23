@@ -11,6 +11,9 @@ if (!Date.now) {
 	};
 }
 
+var background = new Image(4800, 2700);
+background.src = 'images/galaxy3.jpg';
+
 let afr;
 let guest = false;
 export const players = {};
@@ -21,6 +24,48 @@ var ratio = 0;
 
 let keys = ["arrowup", "arrowright", "arrowdown", "arrowleft"];
 let keys2 = ["w", "d", "s", "a"];
+let stars = [];
+
+
+function getRandom( min, max ) {
+	return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
+}
+
+class Star {
+	constructor( x, y, radius, color ) {
+		this.x = x;
+		this.y = y;
+		this.radius = radius;
+		this.color = color;
+		this.iter = Math.random() * 150;
+		this.change = Math.random() * 3 + 1;
+    this.dist = Math.random() * 2 + 1;
+	}
+	draw( delta ) {
+		this.radius += Math.random() - 0.5;
+		this.radius =
+			this.radius <= 0 ?
+			0.1 :
+			this.radius >= 4 ?
+			Math.random() * 1.2 :
+			this.radius;
+		this.iter += delta;
+		if ( this.iter >= this.change ) {
+			this.x = getRandom( -server.x, server.x * 2 );
+			this.y = getRandom( -server.y, server.y * 2 );
+			this.iter = 0;
+			this.radius = Math.random() * 1.2;
+		}
+		const [ x, y ] = [
+			Math.round( this.x - players[selfId].x/this.dist + canvas.width / 2 ),
+			Math.round( this.y - players[selfId].y/this.dist + canvas.height / 2 )
+		];
+		ctx.beginPath();
+		ctx.arc( x, y, this.radius, 0, 360 );
+		ctx.fillStyle = this.color;
+		ctx.fill();
+	}
+}
 
 function round(e) {
 	return Math.round(e);
@@ -323,7 +368,7 @@ class Player {
 				ctx.fillStyle = "rgb(50, 50, 50)"
 			}
 			else {
-				ctx.fillStyle = `hsl(${Date.now() / 10}, 90%, 20%)`
+				ctx.fillStyle = `hsl(${Date.now() / 10}, 90%, 40%)`
 			}
 			ctx.arc(x, y, this.size, 0, Math.PI * 2)
 			ctx.fill();
@@ -331,9 +376,9 @@ class Player {
 
 			ctx.textSize(30);
 			ctx.fillText(this.name, x, y - this.size - 22)
-			ctx.textSize(17);
+			ctx.textSize(22);
       if (this.level != null){
-			ctx.fillText("Level "+this.level, x, y - this.size - 4.3)
+			ctx.fillText("Level "+this.level, x, y + this.size + 21)
       }
       else{
       ctx.fillText("Guest Account", x, y - this.size - 4.3)
@@ -494,14 +539,22 @@ function render(dt) {
 	ctx.clearRect(0, 0, 1600, 900)
 	ctx.fillStyle = 'rgb(0, 0, 0)'
 	ctx.fillRect(0, 0, 1600, 900)
+
 	if (selfId) {
+    ctx.drawImage(background, -1000-self.x/10, -300-self.y/10, 3200, 1800)
+    ctx.globalAlpha = 0.2;
+    ctx.fillStyle = 'rgb(0, 0, 0)'
+	  ctx.fillRect(0, 0, 1600, 900)
+    ctx.globalAlpha = 1;
 		//Update
-		ctx.fillStyle = `rgb(200, 50, 50)`
-		ctx.fillRect(-self.x + 800 - 10, -self.y + 450 - 10, server.x + 20, server.y + 20)
-		ctx.fillStyle = `rgb(200, 200, 200)`
-		ctx.fillRect(-self.x + 800, -self.y + 450, server.x, server.y)
+		ctx.strokeStyle = `rgb(200, 50, 50)`
+    ctx.lineWidth = 10;
+		ctx.strokeRoundRect(-self.x + 800 - 10, -self.y + 450 - 10, server.x + 20, server.y + 20, 15)
 
 		let leaderboard = [];
+    for (let i of stars){
+      i.draw(dt)
+    }
 		for (let i of Object.keys(players)) {
 			const player = players[i];
 			if (!player.dead) {
@@ -571,7 +624,7 @@ function render(dt) {
     ctx.fillStyle = `hsla(${83+ratio*80}, ${67+ratio*22}%, ${42+ratio*8}%, 1)`
     ctx.roundRect(1525, 290 + 520*(1-ratio), 20, 520*ratio+20, 12)
 
-    ctx.fillStyle = "rgb(70, 70, 70)"
+    ctx.fillStyle = "rgb(20, 20, 20)"
     ctx.textSize(32);
     ctx.fillText("Lv"+self.level, 1535, 860)
     ctx.textSize(20);
@@ -777,6 +830,17 @@ ws.addEventListener("message", (datas) => {
 			server.tick = msg.config.tick;
 			server.x = msg.config.x;
 			server.y = msg.config.y;
+      let colorRange = [0, 60, 240];
+			for (let i = 0; i < 90; i++) {
+			  let x = getRandom(-server.x/2, server.x * 2),
+			    y = getRandom(-server.y/2, server.y * 2),
+			    radius = Math.random() * 1.2,
+			    hue = colorRange[getRandom(0, colorRange.length - 1)],
+			    sat = getRandom(50, 100);
+			  stars.push(
+			    new Star(x, y, radius, "hsl(" + hue + ", " + sat + "%, 88%)")
+			  );
+      }
 		}
 		if (msg.datas) {
 			if (msg.datas.player && msg.datas.player.length > 0) {

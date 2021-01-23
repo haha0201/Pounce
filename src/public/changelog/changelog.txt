@@ -1,9 +1,24 @@
 Pounce - Game Version History
+
+January 22nd, 2021
+====
+v1.4.0
+- Game looks super pog and 3D with galaxy background now
+====
+v1.3.0
+- Game theme is Updated
+====
+January 22nd, 2021
+v1.2.1
+- Changed how the progress bar looks a lot, made it more pog, also display data on bottom of the bar
+- Dev accounts now have super high amounts of levels. The developers' personal accounts are not modified, however.
+- Fixed a bug where you can gain levels much faster sometimes
+====
 January 22nd, 2021
 v1.2.0
 - Added XP bar at right side of screen, you can see your XP progress there
 - Updated graphics a little bit
-===
+====
 January 21st, 2021
 v1.1.0
 - Added levels to accounts

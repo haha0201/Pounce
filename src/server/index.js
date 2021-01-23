@@ -100,11 +100,12 @@ async function createUser(account) {
     acc.level = xpData.level;
     acc.xpNeeded = xpData.xpNeeded;
     acc.xp = xpData.progress;
-    acc.toXP = xpData.xpNeeded;
+    acc.toXP = xpData.progress;
 
 		acc.kills = 0;
     acc.record = 0;
     acc.recordKills = 0;
+    acc.bounces = 0;
     acc.bounces = 0;
     
 		acc.dev = false;
@@ -581,17 +582,16 @@ console.log("Game Started")
 
 setInterval(() => {
 	db.set("accounts", accounts).catch((error) => {console.error(error);})
-}, 3300)
+}, 4200)
 
 //Setting Devs
 //Only run if you want to make account gain XP
 /*
 setTimeout(() => {
   for(var i of Object.keys(accounts)){
-    if (["Tester"].includes(accounts[i].username)){
-      accounts[i].totalXP = 27856608;
+    if (["7"].includes(accounts[i].username)){
+      accounts[i].totalXP = 100000;
     }
   }
 }, 2000)
 */
-
