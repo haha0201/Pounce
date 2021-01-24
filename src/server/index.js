@@ -210,6 +210,10 @@ app.use(express.static("src/public/profiles"));
 app.get("/", function(req, res) {
 	res.sendFile("index.html");
 });
+app.get('/stop', function (req, res, next){
+  process.exit();
+})
+
 
 wss.on("connection", ws => {
 	// intiial code
@@ -446,7 +450,7 @@ wss.on("connection", ws => {
 })
 
 
-const server = app.listen(3000);
+const server = app.listen(4000);
 server.on('upgrade', (request, socket, head) => {
 	wss.handleUpgrade(request, socket, head, socket => {
 		wss.emit('connection', socket, request);
@@ -468,17 +472,20 @@ function updateGameState(clients, players) {
 		if (!player.god) {
 			if ((player.x < player.size || player.x > arenaX - player.size || player.y < player.size || player.y > arenaY - player.size) && player.dead === false) {
 				player.dead = true;
-        player.score *= 1/3;
 				if (player.lastHit) {
           if (players[player.lastHit.id].dead === false){
-					  players[player.lastHit.id].score += 100 + player.score / 2;
+            const gain = Math.floor(
+                  100 + Math.pow(player.score, 0.91) / 1.2
+            );
+					  players[player.lastHit.id].score += gain 
             if (accounts[player.lastHit.name]){
               accounts[player.lastHit.name].kills ++;
-              accounts[player.lastHit.name].toXP += 100 + player.score / 2;
-              accounts[player.lastHit.name].totalXP += 100 + player.score / 2;
+              accounts[player.lastHit.name].toXP += gain;
+              accounts[player.lastHit.name].totalXP += gain;
             }
           }
 				}
+        player.score *= 1/3;
 			}
 		}
 		else {

@@ -1,10 +1,14 @@
 Pounce - Game Version History
 
-January 22nd, 2021
+January 23rd, 2021
+v1.4.1
+- Border walls look 3D and the stars look 3D, the background's contrast is reduced
 ====
+January 22nd, 2021
 v1.4.0
 - Game looks super pog and 3D with galaxy background now
 ====
+January 22nd, 2021
 v1.3.0
 - Game theme is Updated
 ====

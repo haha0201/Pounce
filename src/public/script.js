@@ -12,7 +12,13 @@ if (!Date.now) {
 }
 
 var background = new Image(4800, 2700);
-background.src = 'images/galaxy3.jpg';
+background.src = 'images/galaxy.png';
+var stars1 = new Image(1600, 900);
+stars1.src = 'images/stars1.png';
+var stars2 = new Image(1600, 900);
+stars2.src = 'images/stars2.png';
+var stars3 = new Image(1600, 900);
+stars3.src = 'images/stars3.png';
 
 let afr;
 let guest = false;
@@ -161,6 +167,24 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, radius) {
 };
 
 CanvasRenderingContext2D.prototype.strokeRoundRect = function (x, y, w, h, radius) {
+  var r = x + w;
+  var b = y + h;
+  this.beginPath();
+  this.moveTo(x + radius, y);
+  this.lineTo(r - radius, y);
+  this.quadraticCurveTo(r, y, r, y + radius);
+  this.lineTo(r, y + h - radius);
+  this.quadraticCurveTo(r, b, r - radius, b);
+  this.lineTo(x + radius, b);
+  this.quadraticCurveTo(x, b, x, b - radius);
+  this.lineTo(x, y + radius);
+  this.quadraticCurveTo(x, y, x + radius, y);
+  this.stroke();
+};
+
+CanvasRenderingContext2D.prototype.centerStrokeRoundRect = function (x, y, w, h, radius) {
+  x = x - w/2;
+  y = y - h/2;
   var r = x + w;
   var b = y + h;
   this.beginPath();
@@ -370,9 +394,12 @@ class Player {
 			else {
 				ctx.fillStyle = `hsl(${Date.now() / 10}, 90%, 40%)`
 			}
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = "black";
 			ctx.arc(x, y, this.size, 0, Math.PI * 2)
 			ctx.fill();
 			ctx.globalAlpha = 1;
+      ctx.shadowBlur = 0;
 
 			ctx.textSize(30);
 			ctx.fillText(this.name, x, y - this.size - 22)
@@ -544,14 +571,32 @@ function render(dt) {
 
 	if (selfId) {
     ctx.drawImage(background, -1000-self.x/10, -300-self.y/10, 3200, 1800)
-    ctx.globalAlpha = 0.2;
-    ctx.fillStyle = 'rgb(0, 0, 0)'
-	  ctx.fillRect(0, 0, 1600, 900)
+    ctx.globalAlpha = 0.15;
+    ctx.fillStyle = "rgb(200, 200, 200)"
+    ctx.fillRect(0, 0, 1600, 900);
     ctx.globalAlpha = 1;
+    ctx.drawImage(stars1, -1000-self.x/8.5, -300-self.y/8.5, 2800, 1800)
+    ctx.drawImage(stars2, -1000-self.x/7, -300-self.y/7, 2400, 1600)
+    ctx.drawImage(stars3, -1000-self.x/5.5, -300-self.y/5.5, 2800, 1800)
+    ctx.drawImage(stars1, -1300-self.x/4, -100-self.y/4, 2400, 1600)
+    
+
 		//Update
-		ctx.strokeStyle = `rgb(200, 50, 50)`
     ctx.lineWidth = 10;
-		ctx.strokeRoundRect(-self.x + 800 - 10, -self.y + 450 - 10, server.x + 20, server.y + 20, 15)
+
+    ctx.strokeStyle = `rgb(200, 80, 80)`
+    for(var i = 9; i--; i>0){
+    ctx.globalAlpha = 1-i/10;
+    let zoom = 1 + i/100;
+    ctx.centerStrokeRoundRect((server.x/2-self.x)/zoom+800, (server.y/2-self.y)/zoom+450, (server.x + 10)/zoom, (server.y + 10)/zoom, 15)
+    }
+
+    ctx.strokeStyle = `rgb(200, 50, 50)`
+    ctx.globalAlpha = 1;
+		ctx.centerStrokeRoundRect(server.x/2-self.x+800, server.y/2-self.y+450, server.x + 10, server.y + 10, 15)
+
+
+    
 
 		let leaderboard = [];
     for (let i of stars){
@@ -833,7 +878,7 @@ ws.addEventListener("message", (datas) => {
 			server.x = msg.config.x;
 			server.y = msg.config.y;
       let colorRange = [0, 60, 240];
-			for (let i = 0; i < 90; i++) {
+			for (let i = 0; i < 30; i++) {
 			  let x = getRandom(-server.x/2, server.x * 2),
 			    y = getRandom(-server.y/2, server.y * 2),
 			    radius = Math.random() * 1.2,
