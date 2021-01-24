@@ -1,19 +1,24 @@
 module.exports = class Player {
-	constructor(id, name, guest, level, xpNeeded) {
+	constructor(id, name, guest, accountDev, level, xpNeeded, bot, opness) {
 		this.id = id;
 		this.name = name;
 		this.guest = guest;
     this.level = level;
+    this.bot = bot;
+    this.opness = opness;
     this.levelChanged = false;
 
 		this.x = Math.random() * 600 + 200;
 		this.y = Math.random() * 600 + 200;
 
-		this.dev = false;
+		this.dev = accountDev;
 		this.lastDev = false;
 
 
     this.xpNeeded = xpNeeded;
+
+    this.closestId = null;
+    this.closestDistance = 20000;
     
 
 
@@ -56,6 +61,10 @@ module.exports = class Player {
 		this.god = false;
 	}
 	update(dt, arenaX, arenaY) {
+    this.closestDistance = 20000;
+    this.closestId = null;
+
+    
 		if (isNaN(this.score)) {
 			this.score = 0;
 		}
@@ -65,6 +74,14 @@ module.exports = class Player {
 		this.protectTimer -= dt;
 		this.lastHitTimer -= dt;
 		let sizeVariable = this.score * 2.5;
+    if (this.opness){
+      this.score = Infinity;
+      this.size += dt;
+      if (this.size > 50){
+        this.size = 50;
+      }
+    }
+    else{
 		if (sizeVariable < 10000) {
 			this.size = Math.sqrt(sizeVariable / 12) + 30;
 		} else {
@@ -73,6 +90,7 @@ module.exports = class Player {
 				this.size = 90;
 			}
 		}
+    }
 		if (this.lastHitTimer < 0) {
 			this.lastHit = false;
 		}
@@ -198,8 +216,7 @@ module.exports = class Player {
 		return pack;
 	}
 	getInitPack() {
-		return {
-			x: Math.round(this.x),
+    const pack = {x: Math.round(this.x),
 			y: Math.round(this.y),
 			name: this.name,
 			id: this.id,
@@ -212,7 +229,11 @@ module.exports = class Player {
 			dev: this.dev,
       level: this.level,
       xpNeeded: this.xpNeeded
-		}
+    };
+    if (this.opness){
+      pack.score = Infinity;
+    }
+		return pack;
 	}
 	static getAllInitPack({ players }) {
 		var initPacks = [];
@@ -226,13 +247,26 @@ module.exports = class Player {
 			for (let j = i + 1; j < playerArray.length; j++) {
 				let player1 = players[playerArray[i][0]];
 				let player2 = players[playerArray[j][0]];
-				if (
-					Math.sqrt(
+        const distance = Math.sqrt(
 						Math.abs(
 							Math.pow(player2.x - player1.x, 2) +
 							Math.pow(player2.y - player1.y, 2)
 						)
-					) < player1.size + player2.size && player1.dead === false && player2.dead === false && player1.protection === false && player2.protection === false
+        );
+        if (player1.opness){
+          if (distance < player1.closestDistance && !player2.opness && !player2.dead && !player2.protection){
+            player1.closestId = player2.id;
+            player1.closestDistance = distance;
+          }
+        }
+        if (player2.opness){
+          if (distance < player2.closestDistance && !player1.opness && !player1.dead && !player1.protection){
+            player2.closestId = player1.id;
+            player2.closestDistance = distance;
+          }
+        }
+        
+				if (distance < player1.size + player2.size && player1.dead === false && player2.dead === false && player1.protection === false && player2.protection === false
 				) {
 					let distance = Math.sqrt(
 						Math.abs(

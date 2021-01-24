@@ -139,9 +139,12 @@ var convert = function(x) {
 	else if (x < 100000000000000000000000) {
 		return String(round(x / 100000000000000000000) / 10) + "S";
 	}
-	else {
+	else if (x < Infinity){
 		return String(round(x / 1000000000000000000000)) + "S";
 	}
+  else{
+    return "God";
+  }
 };
 
 let selfId = "";
@@ -388,12 +391,7 @@ class Player {
 				ctx.globalAlpha = 1;
 			}
 			ctx.beginPath();
-			if (!this.dev) {
-				ctx.fillStyle = "rgb(50, 50, 50)"
-			}
-			else {
-				ctx.fillStyle = `hsl(${Date.now() / 10}, 90%, 40%)`
-			}
+			ctx.fillStyle = "rgb(50, 50, 50)"
       ctx.shadowBlur = 10;
       ctx.shadowColor = "black";
 			ctx.arc(x, y, this.size, 0, Math.PI * 2)
@@ -407,10 +405,15 @@ class Player {
       ctx.fillText(convert(this.score), x, y - this.size-3)
 			ctx.textSize(22);
       if (this.level != null){
+      if (!this.dev){
 			ctx.fillText("Level "+this.level, x, y + this.size + 21)
       }
       else{
-      ctx.fillText("Guest Account", x, y + this.size + 21)
+      ctx.fillText("Level "+this.level+" Dev", x, y + this.size + 21)
+      }
+      }
+      else{
+      ctx.fillText("Guest", x, y + this.size + 21)
       }
 
 

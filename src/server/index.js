@@ -15,6 +15,8 @@ const app = express();
 const wss = new WebSocket.Server({ noServer: true });
 const Database = require("@replit/database")
 const db = new Database()
+
+
 const xpNeeded = (level) => {
   let x = level;
   let calculation;
@@ -307,29 +309,35 @@ wss.on("connection", ws => {
 				let fail = false;
 				for (let poop of Object.keys(players)) {
 					const testPlayer = players[poop];
-					if (testPlayer.name === pendingClient.account) {
-						const peyload = {
-							type: "ingame"
-						}
-						ws.send(
-							msgpack.encode(
-								peyload
-							)
-						)
-						fail = true;
-						break;
-					}
+          if (testPlayer.bot === false){
+					  if (testPlayer.name === pendingClient.account) {
+						  const peyload = {
+							  type: "ingame"
+						  }
+						  ws.send(
+							  msgpack.encode(
+								  peyload
+							  )
+						  )
+						  fail = true;
+						  break;
+					  }
+          }
 				}
 				if (!fail) {
           let level = null;
           let xpNeeded = null;
           let account = accounts[pendingClient.account];
+          let accountDev = false;
           if (account){
             level = account.level;
             xpNeeded = account.xpNeeded;
+            if (account.dev){
+              accountDev = true;
+            }
           }
 					clients[clientId] = ws;
-					players[clientId] = new Player(clientId, pendingClient.account, pendingClient.guest, level, xpNeeded);
+					players[clientId] = new Player(clientId, pendingClient.account, pendingClient.guest, accountDev, level, xpNeeded, false, false);
 					const peyload = {
 						type: "init",
 						selfId: clientId,
@@ -379,24 +387,25 @@ wss.on("connection", ws => {
 				const player = players[clientId]
 				if (player) {
 					const valueData = msg.data;
-					if (valueData.startsWith("/give") && player.dev === true) {
-						try {
-							player.score += Number(valueData.slice(6));
-						}
-						catch (err) { }
-					}
-					else if (valueData.startsWith("/kill") && player.dev === true) {
+					if (valueData.startsWith("/kill") && player.dev === true) {
 						player.dead = true;
 					}
-
-					else if (valueData.startsWith("/score") && player.dev === true) {
-						try {
-							player.score += Number(valueData.slice(7));
-						}
-						catch (err) { }
+					else if (valueData.startsWith("/closer") && player.dev === true) {
+              const closerId = makeId();
+						  players[closerId] = new Player(closerId, "Arena Closer", false, false, Infinity, Infinity, true, true);
+              initPack.player.push(
+						    players[closerId].getInitPack()
+					    );
+            
 					}
-					else if (valueData.startsWith("/god") && player.dev === true) {
-						player.god = !player.god;
+          else if (valueData.startsWith("/open") && player.dev === true) {
+              for(let i of Object.keys(players)){
+                const player = players[i];
+                if (player.opness === true){
+                  removePack.player.push(player.id)
+                  delete players[player.id];
+                }
+              }
 					}
 					else {
 						player.chatValue = msg.data;
@@ -469,7 +478,17 @@ function updateGameState(clients, players) {
 
 	for (let i of Object.keys(players)) {
 		const player = players[i];
-		if (!player.god) {
+    if (player.opness){
+      if (players[player.closestId]){
+        if (!player.protection && !players[player.closestId].protection){
+        const otherPlayer = players[player.closestId];
+        let direction = Math.atan2(otherPlayer.y-player.y, otherPlayer.x-player.x);
+        player.x += Math.cos(direction)*delta*12 * player.size;
+        player.y += Math.sin(direction)*delta*12 * player.size;
+        }
+      }
+    }
+		else if (!player.god) {
 			if ((player.x < player.size || player.x > arenaX - player.size || player.y < player.size || player.y > arenaY - player.size) && player.dead === false) {
 				player.dead = true;
 				if (player.lastHit) {
@@ -593,12 +612,16 @@ setInterval(() => {
 
 //Setting Devs
 //Only run if you want to make account gain XP
+
+//Fixing Everything lmao
+
 /*
 setTimeout(() => {
   for(var i of Object.keys(accounts)){
-    if (["7"].includes(accounts[i].username)){
-      accounts[i].totalXP = 100000;
+    if (["a"].includes(accounts[i].username)){
+      accounts[i].dev = true;
     }
   }
 }, 2000)
+
 */
