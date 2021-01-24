@@ -161,11 +161,13 @@ module.exports = class Player {
 		let pack = [];
 		for (let i of Object.keys(players)) {
 			let player = players[i];
+      if (player){
 			if (players[i].dead === false) {
 				players[i].update(delta, arenaX, arenaY);
 
 			}
 			pack.push(players[i].getUpdatePack());
+      }
 		}
 		return pack;
 	}

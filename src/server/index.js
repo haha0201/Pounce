@@ -231,6 +231,14 @@ wss.on("connection", ws => {
 				const account = msg.account;
 				account.username = account.username.replace(whiteSpace, "")
 				account.password = sha256(account.password)
+        if (account.username.toLowerCase() === "arena closer"){
+          ws.send(msgpack.encode({
+						type: "create",
+						success: false,
+						reason: 69
+					}))
+        }
+        else{
 				if (!/\S/.test(account.username) || account.username.length > 16) {
 					ws.send(msgpack.encode({
 						type: "create",
@@ -257,10 +265,18 @@ wss.on("connection", ws => {
 						//send the client initial data
 					})
 				}
+        }
 			} else if (msg.type === "login") {
 				const account = msg.account;
 				account.username = account.username.replace(whiteSpace, "");
 				account.password = sha256(account.password)
+        if (account.username === "Arena Closer"){
+          ws.send(msgpack.encode({
+						type: "login",
+						success: false,
+					}))
+        }
+        else{
 				hasUser(account, true).then(() => {
 					// user is in base
 					for (let accId of Object.keys(accounts)) {
@@ -289,6 +305,8 @@ wss.on("connection", ws => {
 					}))
 					//send the client initial data
 				})
+        }
+        
 			} else if (msg.type === "guest") {
 				pendingClient.account = "Guest" +
 					randomConso().toUpperCase() +
@@ -492,6 +510,7 @@ function updateGameState(clients, players) {
 			if ((player.x < player.size || player.x > arenaX - player.size || player.y < player.size || player.y > arenaY - player.size) && player.dead === false) {
 				player.dead = true;
 				if (player.lastHit) {
+          if (players[player.lastHit.id]){
           if (players[player.lastHit.id].dead === false){
             const gain = Math.floor(
                   100 + Math.pow(player.score, 0.91) / 1.2
@@ -502,6 +521,7 @@ function updateGameState(clients, players) {
               accounts[player.lastHit.name].toXP += gain;
               accounts[player.lastHit.name].totalXP += gain;
             }
+          }
           }
 				}
         player.score *= 1/3;
@@ -618,10 +638,10 @@ setInterval(() => {
 /*
 setTimeout(() => {
   for(var i of Object.keys(accounts)){
-    if (["a"].includes(accounts[i].username)){
-      accounts[i].dev = true;
+    if (["Knightmare"].includes(accounts[i].username)){
+      accounts[i].totalXP = 32000;
     }
   }
 }, 2000)
-
 */
+

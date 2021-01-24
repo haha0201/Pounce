@@ -818,6 +818,9 @@ ws.addEventListener("message", (datas) => {
 			if (msg.reason === 2) {
 				info.innerHTML = "This username has been taken"
 			}
+      if (msg.reason === 69){
+        info.innerHTML = "Really?"
+      }
 		}
 	}
 	else if (msg.type === "logout") {
