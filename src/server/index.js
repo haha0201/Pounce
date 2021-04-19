@@ -484,8 +484,8 @@ wss.on("connection", ws => {
 	})
 })
 
-
-const server = app.listen(4000);
+const PORT = 4000 || process.env.PORT;
+const server = app.listen(PORT);
 server.on('upgrade', (request, socket, head) => {
 	wss.handleUpgrade(request, socket, head, socket => {
 		wss.emit('connection', socket, request);
