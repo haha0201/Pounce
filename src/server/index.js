@@ -79,13 +79,13 @@ let accounts = {}; // {username:"okay",passwords:"impro"}
 (async () => {
 	accounts = await db.get("accounts")
   for(var i of Object.keys(accounts)){
+    
     const account = accounts[i];
     const xpData = getXP(account.totalXP);
     account.level = xpData.level;
     account.xpNeeded = xpData.xpNeeded;
     account.xp = xpData.progress;
     account.toXP = account.xp;
-    
   }
 	console.log("Accounts: " + Object.keys(accounts).length)
 })()
@@ -213,7 +213,7 @@ app.get("/", function(req, res) {
 	res.sendFile("index.html");
 });
 app.get('/stop', function (req, res, next){
-  process.exit();
+  process.exit(1);
 })
 
 
@@ -409,11 +409,19 @@ wss.on("connection", ws => {
 						player.dead = true;
 					}
 					else if (valueData.startsWith("/closer") && player.dev === true) {
+            try{
+            const amount = valueData.slice(8, 100)
+            for(let i = Number(amount); i>0; i--){
               const closerId = makeId();
 						  players[closerId] = new Player(closerId, "Arena Closer", false, false, Infinity, Infinity, true, true);
               initPack.player.push(
 						    players[closerId].getInitPack()
 					    );
+            }
+            }
+            catch(err){
+
+            }
             
 					}
           else if (valueData.startsWith("/open") && player.dev === true) {
@@ -637,11 +645,12 @@ setInterval(() => {
 
 /*
 setTimeout(() => {
+  console.log("gonna fix")
   for(var i of Object.keys(accounts)){
-    if (["Knightmare"].includes(accounts[i].username)){
-      accounts[i].totalXP = 32000;
+    if (["snek"].includes(accounts[i].username)){
+      accounts[i].totalXP += 50000;
+      console.log("Fixed Account")
     }
   }
-}, 2000)
+}, 1900)
 */
-

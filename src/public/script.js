@@ -10,6 +10,9 @@ if (!Date.now) {
 		return new Date().getTime();
 	};
 }
+if (location.protocol !== 'https:') {
+    location.replace(`https:${location.href.substring(location.protocol.length)}`);
+}
 
 var background = new Image(4800, 2700);
 background.src = 'images/galaxy.png';
@@ -392,12 +395,9 @@ class Player {
 			}
 			ctx.beginPath();
 			ctx.fillStyle = "rgb(50, 50, 50)"
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = "black";
 			ctx.arc(x, y, this.size, 0, Math.PI * 2)
 			ctx.fill();
 			ctx.globalAlpha = 1;
-      ctx.shadowBlur = 0;
 
 			ctx.textSize(30);
 			ctx.fillText(this.name, x, y - this.size - 22)
@@ -586,13 +586,14 @@ function render(dt) {
 
 		//Update
     ctx.lineWidth = 10;
-
+    /*
     ctx.strokeStyle = `rgb(200, 80, 80)`
     for(var i = 9; i--; i>0){
     ctx.globalAlpha = 1-i/10;
     let zoom = 1 + i/100;
     ctx.centerStrokeRoundRect((server.x/2-self.x)/zoom+800, (server.y/2-self.y)/zoom+450, (server.x + 10)/zoom, (server.y + 10)/zoom, 15)
     }
+    */
 
     ctx.strokeStyle = `rgb(200, 50, 50)`
     ctx.globalAlpha = 1;
